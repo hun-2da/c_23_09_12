@@ -11,6 +11,10 @@ typedef struct TreeNode {
 /**스택의 사이즈_배열 스택*/
 #define SIZE 100
 
+/**노드의 수를 구하기 위한 전역 변수*/
+int count = 0;
+
+
 int top = -1;
 int top2 = -1;
 TreeNode* stack[SIZE];
@@ -43,38 +47,13 @@ TreeNode* pop2() {
 	}
 	return p;
 }
-/**중위*/
-void inorder_iter(TreeNode* root) {
-	while (1) {
-		for (; root; root = root->left) {		//최대한 왼쪽까지 이동
-			push(root);							//왼쪽 노드를 전부 저장 (왼,중,오 순이기 때문에 왼쪽노드를 전부 저장 후 오른쪽 확인할 예정)
-		}
-		root = pop();							//왼쪽노드를 불러와 출력하고 오른쪽 노드로 이동
-		if (!root) break;						//더이상 팝할 노드가 없다면 종료
-		printf("[%d]", root->data);
-		root = root->right;
-	}
-}
-/**전위*/
-void preorder_iter(TreeNode* root) {
-	while (1) {
-		for (; root; root = root->left) {		//최대한 왼쪽노드 위치까지 이동
-			if (root->right) {
-				push(root);						//오른쪽 자식 노드가 있는 경우에 스택에 저장
-			}
-			printf("[%d]", root->data);
-		}
-		if (!root) {
-			root = pop();						// root가 NULL이면 스택에 저장된 노드를 팝한 후 오른쪽으로 이동
-			if (!root) break;					// 더이상 pop할 노드가 없다면 종료(마지막)
-			root = root->right;
-		}
-	}
-}
+
+
 /**후위식*/
 void postorder_iter(TreeNode* root) {
+	count = 0;
 	while (1) {
-
+		count++;
 		if (!root) {
 			root = pop2();				//왼쪽에 갈수 있는길 확인(2번째 stack에서 pop)
 			if (!root) { break; }		//2번째 스택이 null이면 break;
@@ -87,38 +66,71 @@ void postorder_iter(TreeNode* root) {
 		root = root->right;
 	}
 	while (1) {
-		root = pop(root);				//1번째 stack에서 하나씩 불러옴
+		int num;
+		int a =  pop()->data;
+		a = check(a);
+		if (a != 0) {
+			int b = pop2()->data;
+			int c = pop2()->data;
+			num = (b, c, a);
+		}
+		else {
+			int b = pop(root)->data;
+			int c =pop(root)->data;
+			c = check(c);
+			num = (a, b, c);
+		}
+		TreeNode tree = {num, NULL,NULL};
+		TreeNode* t = &tree;
+		push2(t);
+		
 		if (!root)break;
 		printf("[%d]", root->data);
 
 	}
-
+}
+int m(int x, int y, int z) {
+	int n = 0;
+	switch (z) {
+	case 1: n = x + y; printf("%d + %d = %d \n", x, y, n); break;
+	case 2:n = x - y; printf("%d - %d = %d \n", x, y, n); break;
+	case 3:n = x * y; printf("%d * %d = %d \n", x, y, n); break;
+	case 4:n = x / y; printf("%d / %d = %d \n", x, y, n); break;
+	}
+	return n;
+}
+int check(int a) {
+	a = (char)a;
+	switch (a) {
+	case '+':	return 1;
+	case '-':	return 2;
+	case '*':	return 3;
+	case '/':	return 4;
+	}
+	return 0;
 }
 
-TreeNode n15 = { 11, NULL, NULL };
-TreeNode n14 = { 10, NULL, NULL };
-TreeNode n9 = { 5, NULL, NULL };
-TreeNode n8 = { 4, NULL, NULL };
-TreeNode n7 = { 9, &n14, &n15 };
-TreeNode n6 = { 8, NULL, NULL };
-TreeNode n5 = { 6, NULL, NULL };
-TreeNode n4 = { 3, &n8, &n9 };
-TreeNode n3 = { 7, &n6, &n7 };
-TreeNode n2 = { 2, &n4, &n5 };
-TreeNode n1 = { 1, &n2, &n3 };
+TreeNode n13 = { 7, NULL, NULL };
+TreeNode n12 = { 6, NULL, NULL };
+TreeNode n11 = { 5, NULL, NULL };
+TreeNode n10 = { 4, NULL, NULL };
+TreeNode n9 = { 3, NULL, NULL };
+TreeNode n8 = { 2, NULL, NULL };
+TreeNode n7 = { 9, NULL, NULL };
+TreeNode n6 = { (int)('/'), &n12, &n13 };
+TreeNode n5 = { (int)('*'), &n10, &n11 };
+TreeNode n4 = { (int)('+'), &n8, &n9 };
+TreeNode n3 = { (int)('+'), &n6, &n7 };
+TreeNode n2 = { (int)('+'), &n4, &n5};
+TreeNode n1 = { (int)('-'), &n2, &n3};
 /**이진 트리지요오*/
 TreeNode* root = &n1;
 
 int main(void) {
-	printf("중위 순회");
-	inorder_iter(root);
-	printf("\n");
-	printf("전위 순회");
-	preorder_iter(root);
-	printf("\n");
 	printf("후위 순회");
 	postorder_iter(root);
 	printf("\n");
+	printf("총 노드의 수는 %d 입니다.", count);
 
 	return 0;
 }
