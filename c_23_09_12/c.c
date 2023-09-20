@@ -48,12 +48,26 @@ TreeNode* pop2() {
 	return p;
 }
 
+b_top = -1;
+double b_stack[SIZE];
+void b_push(double d) {
+	if (b_top < SIZE - 1) {
+		b_stack[++b_top] = d;
+	}
+}
+double b_pop() {
+	double d = 0;
+	if (b_top >= 0) {
+		d = b_stack[b_top--];
+	}
+	return d;
+}
 
 /**후위식*/
 void postorder_iter(TreeNode* root) {
 	count = 0;
 	while (1) {
-		count++;
+		
 		if (!root) {
 			root = pop2();				//왼쪽에 갈수 있는길 확인(2번째 stack에서 pop)
 			if (!root) { break; }		//2번째 스택이 null이면 break;
@@ -64,40 +78,47 @@ void postorder_iter(TreeNode* root) {
 		}
 		push(root);						//첫번째 스택에 push
 		root = root->right;
+		count++;
 	}
-	while (1) {
-		int num;
-		int a =  pop()->data;
-		a = check(a);
-		if (a != 0) {
-			int b = pop2()->data;
-			int c = pop2()->data;
-			num = (b, c, a);
+	
+
+	for (int i = 0; i < count; i++) {
+		
+		int number = pop()->data;
+		if (check(number) == 0) {
+			b_push(number);
 		}
 		else {
-			int b = pop(root)->data;
-			int c =pop(root)->data;
-			c = check(c);
-			num = (a, b, c);
-		}
-		TreeNode tree = {num, NULL,NULL};
-		TreeNode* t = &tree;
-		push2(t);
-		
-		if (!root)break;
-		printf("[%d]", root->data);
+			double op2 = b_pop();
+			double op1 = b_pop();
+			double d;
+			number = check(number);
+			switch (number) {
+			case 1: 
+				d = op1 + op2;
+				printf("%.2lf + %.2lf = %.2lf \n", op1, op2, d);
+				b_push(op1 + op2);
+				break;
+			case 2: 
+				d = op1 - op2;
+				printf("%.2lf - %.2lf = %.2lf \n", op1, op2, d);
+				b_push(d);
+				break;
+			case 3:
+				d = op1 * op2;
+				printf("%.2lf * %.2lf = %.2lf \n", op1, op2, d);
+				b_push(d); 
+				break;
+			case 4:
+				d = op1 / op2;
+				printf("%.2lf / %.2lf = %.2lf \n", op1, op2, d);
+				b_push(d);
+				break;
+			}
 
+
+		}
 	}
-}
-int m(int x, int y, int z) {
-	int n = 0;
-	switch (z) {
-	case 1: n = x + y; printf("%d + %d = %d \n", x, y, n); break;
-	case 2:n = x - y; printf("%d - %d = %d \n", x, y, n); break;
-	case 3:n = x * y; printf("%d * %d = %d \n", x, y, n); break;
-	case 4:n = x / y; printf("%d / %d = %d \n", x, y, n); break;
-	}
-	return n;
 }
 int check(int a) {
 	a = (char)a;
@@ -127,7 +148,7 @@ TreeNode n1 = { (int)('-'), &n2, &n3};
 TreeNode* root = &n1;
 
 int main(void) {
-	printf("후위 순회");
+	printf("후위 순회\n");
 	postorder_iter(root);
 	printf("\n");
 	printf("총 노드의 수는 %d 입니다.", count);
