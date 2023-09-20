@@ -48,8 +48,9 @@ TreeNode* pop2() {
 	return p;
 }
 
-b_top = -1;
+/**후위표기식 연산용 스택*/
 double b_stack[SIZE];
+b_top = -1;
 void b_push(double d) {
 	if (b_top < SIZE - 1) {
 		b_stack[++b_top] = d;
@@ -81,10 +82,10 @@ void postorder_iter(TreeNode* root) {
 		count++;
 	}
 	
-
+	//후위식으로 읽어낸 트리 연산 및 출력을 위한 반복문
 	for (int i = 0; i < count; i++) {
 		
-		int number = pop()->data;
+		int number = pop()->data;	// 트리에서 후위식으로 읽어낸 스택을 pop
 		if (check(number) == 0) {
 			b_push(number);
 		}
@@ -120,6 +121,7 @@ void postorder_iter(TreeNode* root) {
 		}
 	}
 }
+/**어떤 문자인지 혹은 숫자인지 확인용 메소드*/
 int check(int a) {
 	a = (char)a;
 	switch (a) {
