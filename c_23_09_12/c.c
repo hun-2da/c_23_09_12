@@ -6,154 +6,79 @@
 typedef struct TreeNode {
 	int data;
 	struct TreeNode* left, * right;
+	int is_thread;
 }TreeNode;
 
-/**스택의 사이즈_배열 스택*/
-#define SIZE 100
+//const ARRAY_SIZE = 11;
+const TRUE = 1;
+const FALSE = 0;
 
-/**노드의 수를 구하기 위한 전역 변수*/
-int count = 0;
+/**thread기능 이용*/
+TreeNode* find_successor(TreeNode* p) {
+	TreeNode* q = p->right;	//오른쪽으로 이동
 
+	if (q == NULL || p->is_thread == TRUE)
+		return q;
 
-int top = -1;
-int top2 = -1;
-TreeNode* stack[SIZE];
-TreeNode* stack2[SIZE];
-/**스택에 노드 저장*/
-void push(TreeNode* p) {
-	if (top < SIZE - 1) {
-		stack[++top] = p;
-	}
+	while (q->left != NULL) q = q->left;		//최대한 왼쪽으로 이동
+	return q;
 }
-/**스택에서 노드를 팝*/
-TreeNode* pop() {
-	TreeNode* p = NULL;
-	if (top >= 0) {
-		p = stack[top--];
-	}
-	return p;
-}
-/**스택2_ 후위순회에 사용_ 좌측 노드*/
-void push2(TreeNode* p) {
-	if (top2 < SIZE - 1) {
-		stack2[++top2] = p;
-	}
-}
-/**스택에서 노드를 팝*/
-TreeNode* pop2() {
-	TreeNode* p = NULL;
-	if (top2 >= 0) {
-		p = stack2[top2--];
-	}
-	return p;
-}
+/**중위식*/
+void thread_inorder(TreeNode* t) {
+	TreeNode* q;
+	q = t;
+	while (q->left) q = q->left;				//최대한 왼쪽으로 이동
+	do {
+		printf(" %d ", q->data);
+		q = find_successor(q);				//오른쪽 확인
 
-/**후위표기식 연산용 스택*/
-double b_stack[SIZE];
-b_top = -1;
-void b_push(double d) {
-	if (b_top < SIZE - 1) {
-		b_stack[++b_top] = d;
-	}
-}
-double b_pop() {
-	double d = 0;
-	if (b_top >= 0) {
-		d = b_stack[b_top--];
-	}
-	return d;
-}
+	} while (q);
 
-/**후위식*/
-void postorder_iter(TreeNode* root) {
-	count = 0;
-	while (1) {
-		
-		if (!root) {
-			root = pop2();				//왼쪽에 갈수 있는길 확인(2번째 stack에서 pop)
-			if (!root) { break; }		//2번째 스택이 null이면 break;
-			else root = root->left;		//null이 아니면 root를 왼쪽이로 이동
-		}
-		if (root->left) {				//만약 왼쪽으로 이동할 수 있다면 2번째 stack에 push
-			push2(root);
-		}
-		push(root);						//첫번째 스택에 push
-		root = root->right;
-		count++;
+}
+/**부모노드를 확인하기 위한 메소드*/
+TreeNode* parent(TreeNode* child) {
+	TreeNode* n = child;
+
+	n = n->right;
+	if (n->left != child && n->right != child) {	//왼쪽이나 오른쪽에 child node가 없을시 왼쪽으로 한번더 이동
+		n = n->left;
 	}
-	
-	//후위식으로 읽어낸 트리 연산 및 출력을 위한 반복문
-	for (int i = 0; i < count; i++) {
-		
-		int number = pop()->data;	// 트리에서 후위식으로 읽어낸 스택을 pop
-		if (check(number) == 0) {
-			b_push(number);
-		}
-		else {
-			double op2 = b_pop();
-			double op1 = b_pop();
-			double d;
-			number = check(number);
-			switch (number) {
-			case 1: 
-				d = op1 + op2;
-				printf("%.2lf + %.2lf = %.2lf \n", op1, op2, d);
-				b_push(op1 + op2);
-				break;
-			case 2: 
-				d = op1 - op2;
-				printf("%.2lf - %.2lf = %.2lf \n", op1, op2, d);
-				b_push(d);
-				break;
-			case 3:
-				d = op1 * op2;
-				printf("%.2lf * %.2lf = %.2lf \n", op1, op2, d);
-				b_push(d); 
-				break;
-			case 4:
-				d = op1 / op2;
-				printf("%.2lf / %.2lf = %.2lf \n", op1, op2, d);
-				b_push(d);
-				break;
-			}
+	printf("NODE %d의 부모노드는 %d \n", child->data, n->data);
 
 
-		}
-	}
+	return n;
 }
-/**어떤 문자인지 혹은 숫자인지 확인용 메소드*/
-int check(int a) {
-	a = (char)a;
-	switch (a) {
-	case '+':	return 1;
-	case '-':	return 2;
-	case '*':	return 3;
-	case '/':	return 4;
-	}
-	return 0;
-}
-
-TreeNode n13 = { 7, NULL, NULL };
-TreeNode n12 = { 6, NULL, NULL };
-TreeNode n11 = { 5, NULL, NULL };
-TreeNode n10 = { 4, NULL, NULL };
-TreeNode n9 = { 3, NULL, NULL };
-TreeNode n8 = { 2, NULL, NULL };
-TreeNode n7 = { 9, NULL, NULL };
-TreeNode n6 = { (int)('/'), &n12, &n13 };
-TreeNode n5 = { (int)('*'), &n10, &n11 };
-TreeNode n4 = { (int)('+'), &n8, &n9 };
-TreeNode n3 = { (int)('+'), &n6, &n7 };
-TreeNode n2 = { (int)('+'), &n4, &n5};
-TreeNode n1 = { (int)('-'), &n2, &n3};
+TreeNode n15 = { 11, NULL, NULL ,0 };
+TreeNode n14 = { 10, NULL, NULL,1 };
+TreeNode n9 = { 5, NULL, NULL,1 };
+TreeNode n8 = { 4, NULL, NULL,1 };
+TreeNode n7 = { 9, &n14, &n15,0 };
+TreeNode n6 = { 8, NULL, NULL,1 };
+TreeNode n5 = { 6, NULL, NULL,1 };
+TreeNode n4 = { 3, &n8, &n9,0 };
+TreeNode n3 = { 7, &n6, &n7,0 };
+TreeNode n2 = { 2, &n4, &n5,0 };
+TreeNode n1 = { 1, &n2, &n3,0 };
 /**이진 트리지요오*/
 TreeNode* root = &n1;
 
 int main(void) {
-	printf("후위 순회\n");
-	postorder_iter(root);
+
+	n8.right = &n4;
+	n9.right = &n2;
+	n5.right = &n1;
+	n6.right = &n3;
+	n14.right = &n7;
+
+	parent(&n8);	// 예제의 노드4와 동일
+	parent(&n9);	// 예제의 노드5와 동일
+	parent(&n5);	// 예제의 노드6와 동일
+
+
+	printf("중위 순회");
+	thread_inorder(root);
 	printf("\n");
-	printf("총 노드의 수는 %d 입니다.", count);
+
 
 	return 0;
 }
