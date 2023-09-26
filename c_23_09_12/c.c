@@ -4,50 +4,90 @@
 
 /**노드 구조체*/
 typedef struct TreeNode {
-	int data;
+	int key;
 	struct TreeNode* left, * right;
-	int is_thread;
 }TreeNode;
 
-//const ARRAY_SIZE = 11;
-const TRUE = 1;
-const FALSE = 0;
 
-/**thread기능 이용*/
-TreeNode* find_successor(TreeNode* p) {
-	TreeNode* q = p->right;	//오른쪽으로 이동
+//#define SIZE 100
+//int top = -1;
+//TreeNode* stack[SIZE];
+//
+///**스택에 노드 저장*/
+//void push(TreeNode* p) {
+//	if (top < SIZE - 1) {
+//		stack[++top] = p;
+//	}
+//}
+///**스택에서 노드를 팝*/
+//TreeNode* pop() {
+//	TreeNode* p = NULL;
+//	if (top >= 0) {
+//		p = stack[top--];
+//	}
+//	return p;
+//}
 
-	if (q == NULL || p->is_thread == TRUE)
-		return q;
+/**몇번의 노드를 탐색했는지 확인하기 위한 변수*/
+int count = 0;
 
-	while (q->left != NULL) q = q->left;		//최대한 왼쪽으로 이동
-	return q;
-}
-/**중위식*/
-void thread_inorder(TreeNode* t) {
-	TreeNode* q;
-	q = t;
-	while (q->left) q = q->left;				//최대한 왼쪽으로 이동
-	do {
-		printf(" %d ", q->data);
-		q = find_successor(q);				//오른쪽 확인
-
-	} while (q);
-
-}
-/**부모노드를 확인하기 위한 메소드*/
-TreeNode* parent(TreeNode* child) {
-	TreeNode* n = child;
-
-	n = n->right;
-	if (n->left != child && n->right != child) {	//왼쪽이나 오른쪽에 child node가 없을시 왼쪽으로 한번더 이동
-		n = n->left;
+/**재귀 중위 순회​*/
+inorder(TreeNode* root) {
+	if (root) {
+		inorder(root->left); // 왼쪽확인
+		printf("%d ", root->key); // 출력
+		inorder(root->right); // 오른쪽확인
 	}
-	printf("NODE %d의 부모노드는 %d \n", child->data, n->data);
-
-
-	return n;
 }
+
+TreeNode* new_node(int item) {
+	TreeNode* temp = (TreeNode*)malloc(sizeof(TreeNode));
+	temp->key = item;
+	temp->left = temp ->right = NULL;
+	return temp;
+
+}
+/**노드를 삭제하기위한 메소드	(재귀함수)*/
+TreeNode* delete_node(TreeNode* root, int key) {
+	if (root == NULL) return root;
+	if (key < root->key)
+		root->left = delete_node(root->left, key);
+	else if (key > root->key) root->right = delete_node(root->right, key);
+	else {
+		if (root->left == NULL) {
+			TreeNode * temp = root -> left
+		}
+	}
+}
+/**노드를 추가하기위한 메소드	(재귀함수)*/
+TreeNode* insert_node(TreeNode* node, int key) {
+	if (node == NULL)	return new_node(key);
+	if (key < node->key)	node->left = insert_nod(node->left, key);
+	else if (key > node->key)		node->right = insert_node(node->right, key);
+
+	return node;
+}
+/**반복이 사용된 노드 서치*/
+TreeNode* search(TreeNode* node, int key) {
+	
+	while (node != NULL) {
+		if (key == node->key) return node;
+		else if (key < node->key)node = node->left;
+		else node = node->right;
+
+		count++;
+	}
+	if (node != NULL)	printf("방문성공 : %d \n",node->key);
+
+	return node;
+}
+
+void check() {
+	printf("방문한 노드의 수는? : %d\n", count);
+	count = 0;
+	inorder(root);
+}
+
 TreeNode n15 = { 11, NULL, NULL ,0 };
 TreeNode n14 = { 10, NULL, NULL,1 };
 TreeNode n9 = { 5, NULL, NULL,1 };
@@ -70,9 +110,38 @@ int main(void) {
 	n6.right = &n3;
 	n14.right = &n7;
 
-	parent(&n8);	// 예제의 노드4와 동일
-	parent(&n9);	// 예제의 노드5와 동일
-	parent(&n5);	// 예제의 노드6와 동일
+	printf("------------------------\n");
+	printf("|    s : 검색          |\n");
+	printf("|    i : 노드추가      |\n");
+	printf("|    d : 노드삭제      |\n");
+	printf("|    t : 중위순회      |\n");
+	printf("|    I : 노드추가(반복)|\n");
+	printf("|    D : 노드삭제(반복)|\n");
+	printf("|    c : 종료          |\n");
+	printf("------------------------\n");
+
+	while (1) {
+		printf("\n\n\n메뉴 입력 : ");
+		char c = ' ';
+		scanf_s("%c", &c);
+		int i = 0;
+		printf("검색할 값 입력 : ");
+		scanf_s("%d", &i);
+
+
+		switch (c) {
+		case 's': search(root, i); check(); break;
+		case 'i': insert_node(root, i); check(); break;
+		case 'd': break;
+		case 't': break;
+		case 'I': break;
+		case 'D': break;
+		case 'c': break;
+		}
+
+
+
+	}
 
 
 	printf("중위 순회");
