@@ -12,12 +12,14 @@ typedef struct TreeNode {
 int count = 0;
 
 /**재귀 중위 순회​*/
-inorder(TreeNode* root) {
+int inorder(TreeNode* root) {
 	if (root) {
+		count++;
 		inorder(root->left); // 왼쪽확인
 		printf("%d ", root->key); // 출력
 		inorder(root->right); // 오른쪽확인
 	}
+	return count;
 }
 
 TreeNode* new_node(int item) {
@@ -40,6 +42,7 @@ TreeNode* min_value_node(TreeNode* node)
 /**노드를 삭제하기위한 메소드	(재귀함수)*/
 TreeNode* delete_node(TreeNode* root, int key) {
 	if (root == NULL) return root;
+	count++;
 	if (key < root->key)
 		root->left = delete_node(root->left, key);
 	else if (key > root->key) root->right = delete_node(root->right, key);
@@ -73,6 +76,7 @@ TreeNode* delete_node_while(TreeNode* root, int key) {
 	TreeNode* current = root;
 	TreeNode* parent = NULL;
 	while (current != NULL && current->key != key) {
+		count++;
 		parent = current;
 		if (key < current->key) {
 			current = current->left;
@@ -140,6 +144,7 @@ TreeNode* delete_node_while(TreeNode* root, int key) {
 
 /**노드를 추가하기위한 메소드	(재귀함수)*/
 TreeNode* insert_node(TreeNode* node, int key) {
+	count++;
 	if (node == NULL)	return new_node(key);
 	if (key < node->key)	node->left = insert_node(node->left, key);
 	else if (key > node->key)		node->right = insert_node(node->right, key);
@@ -151,6 +156,7 @@ TreeNode* insert_node(TreeNode* node, int key) {
 TreeNode* insert_node_while(TreeNode* node, int key) {
 	TreeNode* current = node;
 	while (current != NULL) {
+		count++;
 		if (key < current->key) {
 			if (current->left == NULL) {
 				current->left = new_node(key);
@@ -173,7 +179,7 @@ TreeNode* insert_node_while(TreeNode* node, int key) {
 TreeNode* search(TreeNode* node, int key) {
 	
 	while (node != NULL) {
-		if (key == node->key) return node;
+		if (key == node->key) break;
 		else if (key < node->key)node = node->left;
 		else node = node->right;
 
@@ -185,9 +191,14 @@ TreeNode* search(TreeNode* node, int key) {
 }
 
 void check(TreeNode* root) {
-	printf("방문한 노드의 수는? : %d\n", count);
+	int count_c = 0;
+	if (count != 0) {
+		count_c = count;
+		inorder(root);
+	}else count_c = inorder(root);
+	printf("\n방문한 노드의 수는? : %d\n", count_c);
 	count = 0;
-	inorder(root);
+	
 }
 
 TreeNode n23 = { 64, NULL, NULL  };
@@ -224,15 +235,19 @@ int main(void) {
 		printf("\n\n\n메뉴 입력 : ");
 		char c=' ';
 		scanf_s("%c", &c, sizeof(c));
-		if (c == 't') {
-			inorder(root); printf("\n");
+		if (c == 'c') {
+			printf("종료합니다. ");
+			exit(0);
 		}
+		else if (c == 't') 
+			check(root);
+		
 		else {
 			int i = 0;
 			printf("검색할 값 입력 : ");
 			scanf_s("%d", &i);
-			while (getchar() != '\n');
-
+			
+			
 			switch (c) {
 			case 's': search(root, i); check(root); break;
 			case 'i': insert_node(root, i); check(root); break;
@@ -240,11 +255,13 @@ int main(void) {
 			case 't': inorder(root); check(root); break;
 			case 'I': insert_node_while(root, i); check(root); break;
 			case 'D': delete_node_while(root, i); check(root); break;
-			case 'c': return 0;
+			default: printf("값이 잘못되었습니다. ");
 			}
 
 			
 		}
+		printf("\n");
+		while (getchar() != '\n');
 	}
 	return 0;
 }
