@@ -43,18 +43,22 @@ TreeNode* min_value_node(TreeNode* node)
 TreeNode* delete_node(TreeNode* root, int key) {
 	if (root == NULL) return root;
 	count++;
+
+	//입력한 값보다 해당 노드의 키값이 클때
 	if (key < root->key)
-		root->left = delete_node(root->left, key);
-	else if (key > root->key) root->right = delete_node(root->right, key);
+		root->left = delete_node(root->left, key);//왼쪽으로 이동
+
+	//입력한 키값이 해당 노드의 키값보다 클때
+	else if (key > root->key) root->right = delete_node(root->right, key);//오른쪽으로 이동
+	
+	//키값과 해당 노드의 키값이 같을때
 	else {
-		if (root->left == NULL) {
+		if (root->left == NULL) {	//left가 null일때 
 			TreeNode* temp = root->right;
-			free(root);
 			return temp;
 		}
 		else if (root->right == NULL) {
 			TreeNode* temp = root->left;
-			free(root);
 			return temp;
 		}
 
@@ -102,7 +106,6 @@ TreeNode* delete_node_while(TreeNode* root, int key) {
 		else {
 			parent->right = NULL;
 		}
-		free(current);
 		return root;
 	}
 
@@ -117,7 +120,6 @@ TreeNode* delete_node_while(TreeNode* root, int key) {
 		else {
 			parent->right = current->right;
 		}
-		free(current);
 		return root;
 	}
 	else if (current->right == NULL) {
@@ -130,7 +132,6 @@ TreeNode* delete_node_while(TreeNode* root, int key) {
 		else {
 			parent->right = current->left;
 		}
-		free(current);
 		return root;
 	}
 
@@ -244,17 +245,34 @@ int main(void) {
 		
 		else {
 			int i = 0;
-			printf("검색할 값 입력 : ");
-			scanf_s("%d", &i);
 			
 			
 			switch (c) {
-			case 's': search(root, i); check(root); break;
-			case 'i': insert_node(root, i); check(root); break;
-			case 'd':delete_node(root, i); check(root); break;
-			case 't': inorder(root); check(root); break;
-			case 'I': insert_node_while(root, i); check(root); break;
-			case 'D': delete_node_while(root, i); check(root); break;
+			case 's': 
+				printf("검색할 값 입력 : ");
+				scanf_s("%d", &i);
+				search(root, i); check(root); 
+				break;
+			case 'i': 
+				printf("삽입할 값 입력 : ");
+				scanf_s("%d", &i); 
+				insert_node(root, i); check(root); 
+				break;
+			case 'd':
+				printf("삭제할 값 입력 : ");
+				scanf_s("%d", &i); 
+				delete_node(root, i); check(root); 
+				break;
+			case 'I': 
+				printf("삽입할 값 입력 : ");
+				scanf_s("%d", &i); 
+				insert_node_while(root, i); check(root); 
+				break;
+			case 'D': 
+				printf("검색할 값 입력 : ");
+				scanf_s("%d", &i); 
+				delete_node_while(root, i); check(root); 
+				break;
 			default: printf("값이 잘못되었습니다. ");
 			}
 
