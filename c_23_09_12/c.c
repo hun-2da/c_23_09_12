@@ -137,9 +137,10 @@ void huffman_tree(int freq[], char ch_list[], int n)
 		e.key = node->weight = freq[i];
 		e.ptree = node;
 		
+		print_array(freq, i);
 		insert_min_heap(heap, e);
-		//print_codes(noxde, freq, top); 
-		print_array(freq, i); 
+
+		
 		
 	}
 	
