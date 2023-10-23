@@ -37,7 +37,7 @@ void init(HeapType* h)
 void insert_min_heap(HeapType* h, element item)
 {
 	int i;
-	i = ++(h->heap_size);
+	i = ++(h->heap_size);	// index를 1부터 시작
 
 	//  트리를 거슬러 올라가면서 부모 노드와 비교하는 과정
 	while ((i != 1) && (item.key < h->heap[i / 2].key)) {
@@ -46,21 +46,22 @@ void insert_min_heap(HeapType* h, element item)
 	}
 	h->heap[i] = item;     // 새로운 노드를 삽입
 }
+/**삭제함수*/
 element delete_min_heap(HeapType* h)
 {
 	int parent, child;
 	element item, temp;
 
-	item = h->heap[1];
-	temp = h->heap[(h->heap_size)--];
+	item = h->heap[1];//처음 노드
+	temp = h->heap[(h->heap_size)--];//마지막 노드
 	parent = 1;
 	child = 2;
 	while (child <= h->heap_size) {
 		// 현재 노드의 자식노드중 더 작은 자식노드를 찾는다.
 		if ((child < h->heap_size) &&
-			(h->heap[child].key) > h->heap[child + 1].key)
+			(h->heap[child].key) > h->heap[child + 1].key)//마지막이 아니거나 왼쪽 노드의 값이 더크다면
 			child++;
-		if (temp.key < h->heap[child].key) break;
+		if (temp.key < h->heap[child].key) break;//전부 확인했으면 break;
 		// 한 단계 아래로 이동
 		h->heap[parent] = h->heap[child];
 		parent = child;
@@ -146,7 +147,7 @@ void huffman_tree(int freq[], char ch_list[], int n)
 		
 		
 		insert_min_heap(heap, e);
-		print_array2(heap->heap, heap->heap_size);
+		print_array2(heap->heap, heap->heap_size); //나열
 	}
 	
 	for (i = 1; i < n; i++) {
@@ -160,7 +161,7 @@ void huffman_tree(int freq[], char ch_list[], int n)
 		printf("%d+%d->%d \n//", e1.key, e2.key, e.key);
 		
 		insert_min_heap(heap, e);
-		print_array2(heap->heap, heap->heap_size);
+		print_array2(heap->heap, heap->heap_size);	//진행 상황(합치는 과정)
 		
 	}
 	e = delete_min_heap(heap); // 최종 트리
