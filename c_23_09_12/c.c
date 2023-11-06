@@ -14,6 +14,85 @@ typedef struct GraphType {
 }GraphType;
 int visited[MAX_VERTICES];
 
+
+
+
+//------------------------------------------------- stack
+
+typedef int stack_element;
+stack_element stack[MAX_VERTICES];
+int top = -1;
+
+int is_empty() {
+	return (top == -1);
+}
+int is_full() {
+	return (top == (MAX_VERTICES - 1));
+}
+void push(stack_element item) {
+	if (is_full()) {
+		fprintf(stderr, " 스택 포화 에러 \n");
+		return;
+	}
+	else stack[++top] = item;
+}
+stack_element pop() {
+	if (is_empty()) {
+		fprintf(stderr, "스택 공백 에러 \n");
+		return 0;
+	}
+	else return stack[top--];
+}
+
+//------------------------------------------------------
+
+
+//------------------------------------------------- queue
+
+typedef int queue_element;
+queue_element queue[MAX_VERTICES];
+int front = -1, rear = -1;
+
+int is_queue_empty() {
+	return (front == -1);
+}
+
+int is_queue_full() {
+	return ((rear + 1) % MAX_VERTICES == front);
+}
+
+void enqueue(queue_element item) {
+	if (is_queue_full()) {
+		fprintf(stderr, " 큐 포화 에러 \n");
+		return;
+	}
+	else {
+		rear = (rear + 1) % MAX_VERTICES;
+		queue[rear] = item;
+	}
+}
+
+queue_element dequeue() {
+	if (is_queue_empty()) {
+		fprintf(stderr, "큐 공백 에러 \n");
+		return 0;
+	}
+	else {
+		int item = queue[front];
+		if (front == rear) {
+			front = rear = -1;
+		}
+		else {
+			front = (front + 1) % MAX_VERTICES;
+		}
+		return item;
+	}
+}
+
+//------------------------------------------------------
+
+
+
 void init(GraphType* g)
 {
 	int r, c;
@@ -73,30 +152,69 @@ void set_node(GraphType* g) {
 }
 
 void dfs_mat(GraphType* g, int v, int check) {
-	// v는 시작위치
 	int count = 0;
-	//printf("%d\t", v);
-	//while (1) {
-		/**발견한 위치(현재 위치) */
-		int w;
-		for (w = v; w < g->n; w++) {//시작하는 위치
-			visited[w] = TRUE;	// true로 표기하여 이미 간곳임을 체크
-			
-			for (int i = 0; i < g->n; i++) {
-				if (g->adj_mat[v][i] && !visited[v]) {
-					// 간곳이 아니며 간선이 있는 곳 일때 
-					w = i; 
-					printf("정점 %d -> ", v);	count++;
-					if (w == check) {
-						printf("탐색 성공 : %d \n", w);
-						printf("방문한 노드의 수는? : %d \n", count);
-						return;
-					}
 
-				}
+	push(v);  // 초기 정점을 스택에 넣음
+	visited[v] = TRUE; // 해당 정점을 방문한 것으로 표시
+
+	while (!is_empty()) {
+		int w = pop(); // 스택에서 정점을 꺼냄
+		printf("정점 %d -> ", w);
+		count++;
+
+		if (v == check) {
+			printf("탐색 성공 : %d\n", check);
+			printf("방문한 노드의 수는? : %d\n", count);
+			return; // 목표 정점을 찾으면 함수를 종료
+		}
+
+		// 아직 방문하지 않은 이웃 정점들을 스택에 넣음
+		for (int i = 0; i < g->n; i++) {
+			if (g->adj_mat[w][i] && !visited[i]) {
+				push(i);
+				visited[i] = TRUE; // 스택에 넣은 정점을 방문한 것으로 표시
 			}
 		}
-	//}
+	}
+
+	// 스택이 비어도 목표 정점을 찾지 못하면 실패 메시지 출력
+	printf("목표 정점을 찾지 못했습니다.\n");
+}
+
+void bfs(GraphType* g, int v, int check) {
+	int count = 0;
+
+	enqueue(v);  // 초기 정점을 큐에 넣음
+	visited[v] = TRUE; // 해당 정점을 방문한 것으로 표시
+
+	while (!is_queue_empty()) {
+		int w = dequeue(); // 큐에서 정점을 꺼냄
+		printf("정점 %d -> ", w);
+		count++;
+
+		if (w == check) {
+			printf("탐색 성공 : %d\n", w);
+			printf("방문한 노드의 수는? : %d\n", count);
+			return; // 목표 정점을 찾으면 함수를 종료
+		}
+
+		// 아직 방문하지 않은 이웃 정점들을 큐에 넣음
+		for (int i = 0; i < g->n; i++) {
+			if (g->adj_mat[v][i] && !visited[i]) {
+				enqueue(i);
+				visited[i] = TRUE;
+			}
+		}
+	}
+
+	// 큐가 비어도 목표 정점을 찾지 못하면 실패 메시지 출력
+	printf("목표 정점을 찾지 못했습니다.\n");
+}
+
+void reset_visited() {
+	for (int i = 0; i < MAX_VERTICES; i++) {
+		visited[i] = FALSE;
+	}
 }
 
 int main(void) {
@@ -122,9 +240,12 @@ int main(void) {
 		scanf_s("%d", &s_num, sizeof(int));
 		scanf_s("%d", &c_num, sizeof(int));
 
+		reset_visited();
+		
+
 		switch (menu_number) {
 		case 1: dfs_mat(g,s_num,c_num);  break;
-		case 2: break;
+		case 2:  bfs(g, s_num, c_num); break;
 		}
 	}
 }
