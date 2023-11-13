@@ -65,8 +65,7 @@ void enqueue(queue_element item) {
 	if (is_queue_full()) {
 		fprintf(stderr, " 큐 포화 에러 \n");
 		return;
-	}
-	else {
+	}else {
 		rear = (rear + 1) % MAX_VERTICES;
 		queue[rear] = item;
 	}
@@ -162,7 +161,7 @@ void dfs_mat(GraphType* g, int v, int check) {
 		printf("정점 %d -> ", w);
 		count++;
 
-		if (v == check) {
+		if (w == check) {
 			printf("탐색 성공 : %d\n", check);
 			printf("방문한 노드의 수는? : %d\n", count);
 			return; // 목표 정점을 찾으면 함수를 종료
@@ -171,6 +170,7 @@ void dfs_mat(GraphType* g, int v, int check) {
 		// 아직 방문하지 않은 이웃 정점들을 스택에 넣음
 		for (int i = 0; i < g->n; i++) {
 			if (g->adj_mat[w][i] && !visited[i]) {
+				
 				push(i);
 				visited[i] = TRUE; // 스택에 넣은 정점을 방문한 것으로 표시
 			}
@@ -199,10 +199,12 @@ void bfs(GraphType* g, int v, int check) {
 		}
 
 		// 아직 방문하지 않은 이웃 정점들을 큐에 넣음
+		
 		for (int i = 0; i < g->n; i++) {
-			if (g->adj_mat[v][i] && !visited[i]) {
+			if (g->adj_mat[w][i] && !visited[i]) {
+				
 				enqueue(i);
-				visited[i] = TRUE;
+				visited[i] = TRUE; // 큐에 넣은 정점을 방문한 것으로 표시
 			}
 		}
 	}
@@ -245,7 +247,7 @@ int main(void) {
 
 		switch (menu_number) {
 		case 1: dfs_mat(g,s_num,c_num);  break;
-		case 2:  bfs(g, s_num, c_num); break;
+		case 2: bfs(g, s_num, c_num); break;
 		}
 	}
 }
