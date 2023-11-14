@@ -7,102 +7,10 @@
 #define MAX_VERTICES 100
 #define INF 1000
 
-
-struct Edge {			// 간선을 나타내는 구조체
-	int start, end, weight;
-};
-
-typedef struct GraphType {
-	int n;	// 간선의 개수
-	struct Edge edges[2 * MAX_VERTICES];
-} GraphType;
-
-// --------------------------------------------------------------------------- 힙 정렬을 위한 함수 정의
-
-
-typedef struct {
-	int key;
-}element;
-typedef struct {
-	element heap[MAX_VERTICES];
-	int heap_size;
-}HeapType;
-
-HeapType* h_create() {
-	return (HeapType*)malloc(sizeof(HeapType));
-}
-
-void h_init(HeapType* h) {
-	h->heap_size = 0;
-}
-
-void insert_min_heap(HeapType* h, element item) {
-	int i;
-	i = ++(h->heap_size);
-	while ((i != 1) && (item.key < h->heap[i / 2].key)) {
-		h->heap[i] = h->heap[i / 2];
-		i /= 2;
-	}
-	h->heap[i] = item;
-}
-element delete_min_heap(HeapType* h) {
-	int parent, child;
-	element item, temp;
-
-	item = h->heap[1];
-	temp = h->heap[(h->heap_size)--];
-	parent = 1;
-	child = 2;
-
-	while (child <= h->heap_size) {
-		if ((child > h->heap_size) && (h->heap[child].key) > h->heap[child + 1].key)
-			child++;
-		if (temp.key < h->heap[child].key) break;
-
-		h->heap[parent] = h->heap[child];
-		parent = child;
-		child *= 2;
-	}
-	h->heap[parent] = temp;
-	return item;
-}
-void heap_sort(element a[], GraphType* g) {
-	int i;
-	int s=0, e=0, w=0;
-	HeapType* h;
-
-	h = h_create();
-	h_init(h);
-	for (i = 0; i < g->n; i++) {
-		insert_min_heap(h, a[i]);
-	}
-	int number = 0;
-	for (i = (g->n - 1); i >= 0; i--) {
-		a[i] = delete_min_heap(h);
-
-		for (int j = 0; j < g->n; j++) {
-			if (a[i].key == g->edges[j].weight) {
-				s = g->edges[number].start;
-				e = g->edges[number].end;
-				w = g->edges[number].weight;
-
-				g->edges[number] = g->edges[j];
-
-				g->edges[j].start = s;
-				g->edges[j].end = e;
-				g->edges[j].weight = w;
-
-				number++;
-			}
-		}
-	}
-	free(h);
-}
-//----------------------------------------------------------------------
-
-
-
 int parent[MAX_VERTICES];		// 부모 노드
+int heapSize = 0;
+
+
 // 초기화
 void set_init(int n)
 {
@@ -125,7 +33,20 @@ void set_union(int a, int b)
 	if (root1 != root2) 	// 합한다. 
 		parent[root1] = root2;
 }
-// 그래프 초기화 
+
+struct Edge {			// 간선을 나타내는 구조체
+	int start, end, weight;
+};
+
+struct Edge heap[MAX_VERTICES];
+
+typedef struct GraphType {
+	int n;	// 간선의 개수
+	struct Edge edges[2 * MAX_VERTICES];
+} GraphType;
+
+
+/**모든 지점을 0으로 초기화 , 모든 간선 INF로 초기화*/
 void graph_init(GraphType* g)
 {
 	g->n = 0;
@@ -135,7 +56,7 @@ void graph_init(GraphType* g)
 		g->edges[i].weight = INF;
 	}
 }
-// 간선 삽입 연산
+/** 간선 삽입 연산, start 지점과 end지점의 거리까지 저장 후 총 간선 수를++ */
 void insert_edge(GraphType* g, int start, int end, int w)
 {
 	g->edges[g->n].start = start;
@@ -150,25 +71,17 @@ int compare(const void* a, const void* b)
 	struct Edge* y = (struct Edge*)b;
 	return (x->weight - y->weight);
 }
+
 // kruskal의 최소 비용 신장 트리 프로그램
-void kruskal(GraphType* g,int number)
+void kruskal(GraphType* g)
 {
-	int edge_accepted = 0;	// 현재까지 선택된 간선의 수	
-	int uset, vset;			// 정점 u와 정점 v의 집합 번호
+	int edge_accepted = 0;
+	int uset, vset;
 	struct Edge e;
 
 	set_init(g->n);				// 집합 초기화
-	if (number == 1)
-		qsort(g->edges, g->n, sizeof(struct Edge), compare);
-	else {
-		element *e_heap = malloc(sizeof(GraphType)*g->n);
+	qsort(g->edges, g->n, sizeof(struct Edge), compare);
 
-		for (int i = 0; i < g->n; i++) {
-			e_heap[i].key = g->edges[i].weight;
-		}
-		heap_sort(e_heap, g);
-
-	}
 	printf("크루스칼 최소 신장 트리 알고리즘 \n");
 	int i = 0;
 	while (edge_accepted < (g->n - 1))	// 간선의 수 < (n-1)
@@ -184,56 +97,101 @@ void kruskal(GraphType* g,int number)
 		i++;
 	}
 }
+void add_edges(GraphType* g) {
 
-
-void set_edge(GraphType *g) {
 	insert_edge(g, 1, 2, 3);
 	insert_edge(g, 1, 6, 11);
 	insert_edge(g, 1, 7, 12);
-
-	insert_edge(g, 2, 3, 5);
-	insert_edge(g, 2, 4, 4);
-	insert_edge(g, 2, 5, 1);
 	insert_edge(g, 2, 6, 7);
 	insert_edge(g, 2, 7, 8);
-
+	insert_edge(g, 2, 5, 1);
+	insert_edge(g, 2, 4, 4);
+	insert_edge(g, 2, 3, 5);
 	insert_edge(g, 3, 4, 2);
 	insert_edge(g, 3, 7, 6);
 	insert_edge(g, 3, 8, 5);
-
 	insert_edge(g, 4, 5, 13);
 	insert_edge(g, 4, 8, 14);
 	insert_edge(g, 4, 10, 16);
-
 	insert_edge(g, 5, 6, 9);
 	insert_edge(g, 5, 9, 18);
-	insert_edge(g, 5, 10, 17);
-
-
 	insert_edge(g, 7, 8, 13);
-
 	insert_edge(g, 8, 10, 15);
-
 	insert_edge(g, 9, 10, 10);
 }
 
-const int QSORT = 1;
-const int MINHEAP = 2;
+/*------------------------------------------------------------------------------------------------------*/
+void push(struct Edge value) {
+	int current = heapSize;
+	while (current > 0 && heap[(current - 1) / 2].weight > value.weight) {
+		heap[current] = heap[(current - 1) / 2];
+		current = (current - 1) / 2;
+	}
+	heap[current] = value;
+	heapSize++;
+}
+
+struct Edge pop() {
+	struct Edge ret = heap[0];
+	struct Edge value = heap[--heapSize];
+	int current = 0;
+	while (current * 2 + 1 < heapSize) {
+		int child;
+		if (current * 2 + 2 == heapSize) {
+			child = current * 2 + 1;
+		}
+		else {
+			child = heap[current * 2 + 1].weight < heap[current * 2 + 2].weight ? current * 2 + 1 : current * 2 + 2;
+		}
+
+		if (value.weight < heap[child].weight) {
+			break;
+		}
+
+		heap[current] = heap[child];
+		current = child;
+	}
+	heap[current] = value;
+	return ret;
+}
+
+void kruskal2(GraphType* g)
+{
+	int edge_accepted = 0;	// 현재까지 선택된 간선의 수
+	int uset, vset;			// 정점 u와 정점 v의 집합 번호
+	struct Edge e;
+
+	set_init(g->n);				// 집합 초기화
+	for (int i = 0; i < g->n; i++) {
+		push(g->edges[i]);
+	}
+
+	printf("크루스칼 최소 신장 트리 알고리즘\n");
+	while (edge_accepted < (g->n - 1))	// 간선의 수 < (n-1)
+	{
+		e = pop();
+		uset = set_find(e.start);		// 정점 u의 집합 번호 
+		vset = set_find(e.end);		// 정점 v의 집합 번호
+		if (uset != vset) {			// 서로 속한 집합이 다르면
+			printf("간선 (%d,%d) %d 선택\n", e.start, e.end, e.weight);
+			edge_accepted++;
+			set_union(uset, vset);	// 두개의 집합을 합친다.
+		}
+	}
+}
+/*------------------------------------------------------------------------------------------------------*/
+
 
 int main(void)
 {
 	GraphType* g;
 	g = (GraphType*)malloc(sizeof(GraphType));
 	graph_init(g);
-	set_edge(g);
 
+	add_edges(g);
 
-	//kruskal(g,QSORT);
-	printf("\n\n\n");
-	kruskal(g,MINHEAP);
-
-	
-
+	//kruskal(g);
+	kruskal2(g);
 	free(g);
 	return 0;
 }
