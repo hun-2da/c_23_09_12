@@ -3,14 +3,8 @@
 #include <limits.h>
 #define MAX_SIZE 20
 
-int select_msum = 0;
-int select_qsum = 0;
-
-int insert_msum = 0;
-int insert_qsum = 0;
-
-int bubble_msum = 0;
-int bubble_qsum = 0;
+int msum = 0;
+int qsum = 0;
 
 
 #define SWAP(x, y, t) ( (t)=(x), (x)=(y), (y)=(t) )
@@ -22,10 +16,10 @@ void selection_sort(int list[], int n)
 		least = i;
 		for (j = i + 1; j < n; j++) 			// 최솟값 탐색
 		{
+			qsum++;
 			if (list[j] < list[least]) { 
-				least = j; select_msum++; 
+				least = j; msum++;
 			}
-			select_qsum++;
 		}
 		SWAP(list[i], list[least], temp);
 
@@ -38,8 +32,12 @@ void insertion_sort(int list[], int n)
 	int i, j, key;
 	for (i = 1; i < n; i++) {
 		key = list[i];
+		qsum++;
 		for (j = i - 1; j >= 0 && list[j] > key; j--)
-			list[j + 1] = list[j]; 		// 레코드의 오른쪽 이동
+		{
+			list[j + 1] = list[j];
+			msum++;
+		} 		// 레코드의 오른쪽 이동
 		list[j + 1] = key;
 	}
 }
@@ -48,9 +46,13 @@ void bubble_sort(int list[], int n)
 {
 	int i, j, temp;
 	for (i = n - 1; i > 0; i--) {
-		for (j = 0; j < i; j++) 	// 앞뒤의 레코드를 비교한 후 교체
-			if (list[j] > list[j + 1])
+		for (j = 0; j < i; j++) { 	// 앞뒤의 레코드를 비교한 후 교체
+			qsum++;
+			if (list[j] > list[j + 1]) {
+				msum++;
 				SWAP(list[j], list[j + 1], temp);
+			}
+		}
 	}
 }
 
@@ -60,7 +62,7 @@ int main() {
 	int i;
 	int n = MAX_SIZE;
 	int list[] = malloc(sizeof(int) * MAX_SIZE);
-
+	int sum[] = {0,0,0,0,0,0};
 
 	for (int j = 0; j < n; j++) {
 		srand(time(NULL));
@@ -69,9 +71,31 @@ int main() {
 
 
 		selection_sort(list, n); // 선택정렬 호출 
+		sum[0] += msum / n;
+		sum[1] += qsum / n;
+		msum = qsum = 0;
+
 		insertion_sort(list, n);
+		sum[2] += msum / n;
+		sum[3] += qsum / n;
+		msum = qsum = 0;
+
 		bubble_sort(list, n);
+		sum[4] += msum / n;
+		sum[5] += qsum / n;
+		msum = qsum = 0;
+
 	}
+	for (int s = 0; s < 5; s++) {
+		sum[s] /= n;
+	}
+	 printf("선택 정렬의 이동 평균은 %d \n", sum[0]); 
+	 printf("선택 정렬의 비교 평균은 %d \n", sum[1]); 
+	 printf("삽입 정렬의 이동 평균은 %d \n", sum[2]); 
+	 printf("삽입 정렬의 비교 평균은 %d \n", sum[3]); 
+	 printf("버블 정렬의 이동 평균은 %d \n", sum[4]); 
+	 printf("버블 정렬의 비교 평균은 %d \n", sum[5]); 
+
 	
 
 	printf("\n");
