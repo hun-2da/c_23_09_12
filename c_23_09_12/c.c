@@ -1,72 +1,82 @@
 ﻿#include <stdio.h>
+#include <stdlib.h>
 #include <limits.h>
+#define MAX_SIZE 20
 
-#define TRUE 1
-#define FALSE 0
-#define MAX_VERTICES 100
-#define INF 1000000
+int select_msum = 0;
+int select_qsum = 0;
 
-typedef struct GraphType {
-    int n;  // 정점의 개수
-    int weight[MAX_VERTICES][MAX_VERTICES];
-} GraphType;
+int insert_msum = 0;
+int insert_qsum = 0;
 
-int path[MAX_VERTICES][MAX_VERTICES];
+int bubble_msum = 0;
+int bubble_qsum = 0;
 
-void print_status(GraphType* g) {
-    printf("Distance:\n");
-    for (int i = 0; i < g->n; i++) {
-        for (int j = 0; j < g->n; j++) {
-            if (g->weight[i][j] == INF) printf("INF ");
-            else printf("%d ", g->weight[i][j]);
-        }
-        printf("\n");
-    }
+
+#define SWAP(x, y, t) ( (t)=(x), (x)=(y), (y)=(t) )
+/** 선택 정렬 */
+void selection_sort(int list[], int n)
+{
+	int i, j, least, temp;
+	for (i = 0; i < n - 1; i++) {
+		least = i;
+		for (j = i + 1; j < n; j++) 			// 최솟값 탐색
+		{
+			if (list[j] < list[least]) { 
+				least = j; select_msum++; 
+			}
+			select_qsum++;
+		}
+		SWAP(list[i], list[least], temp);
+
+
+	}
+}
+/**삽입정렬*/
+void insertion_sort(int list[], int n)
+{
+	int i, j, key;
+	for (i = 1; i < n; i++) {
+		key = list[i];
+		for (j = i - 1; j >= 0 && list[j] > key; j--)
+			list[j + 1] = list[j]; 		// 레코드의 오른쪽 이동
+		list[j + 1] = key;
+	}
+}
+/**버블정렬*/
+void bubble_sort(int list[], int n)
+{
+	int i, j, temp;
+	for (i = n - 1; i > 0; i--) {
+		for (j = 0; j < i; j++) 	// 앞뒤의 레코드를 비교한 후 교체
+			if (list[j] > list[j + 1])
+				SWAP(list[j], list[j + 1], temp);
+	}
 }
 
-void floyd(GraphType* g) {
-    for (int k = 0; k < g->n; k++) {
-        for (int i = 0; i < g->n; i++) {
-            for (int j = 0; j < g->n; j++) {
-                if (g->weight[i][k] + g->weight[k][j] < g->weight[i][j]) {
-                    g->weight[i][j] = g->weight[i][k] + g->weight[k][j];
-                    path[i][j] = k;
-                }
-            }
-        }
-    }
-}
 
-void print_path(int start, int end) {
-    if (path[start][end] != INF) {
-        print_path(start, path[start][end]);
-        printf("-> %d ", path[start][end]);
-        print_path(path[start][end], end);
-    }
-    else {
-        printf("-> %d ", end);
-    }
-}
 
-int main(void) {
-    GraphType g = { 10,
-    {{ 0, 3, INF, INF, INF, 11, 12, INF, INF, INF },
-    { 3,  0, 5, 4, 1, 7, 8 , INF, INF, INF },
-    { INF, 5, 0, 2, INF, INF, 6, 5, INF, INF },
-    { INF, 4, 2, 0, 13, INF, INF, 14, INF, 16 },
-    { INF, 1, INF, 13, 0, 9, INF,INF, 18, 17 },
-    { 11, 7, INF, INF, 9, 0, INF, INF, INF, INF },
-    { 12, 8, 6, INF, INF, INF, 0, 13, INF, INF },
-    { INF, INF, 5, 14, INF, INF, 13, 0, INF, 15 },
-    { INF, INF, INF, INF, 18, INF, INF, INF, 0, 10 },
-    { INF, INF, INF, 16, INF, INF, INF, 15, 10, 0 }
-    } };
+int main() {
+	int i;
+	int n = MAX_SIZE;
+	int list[] = malloc(sizeof(int) * MAX_SIZE);
 
-    floyd(&g);
-    print_status(&g);
 
-    printf("Shortest Path: ");
-    print_path(0, 4);
+	for (int j = 0; j < n; j++) {
+		srand(time(NULL));
+		for (i = 0; i < n; i++)      	// 난수 생성 및 출력 
+			list[i] = rand() % 100; // 난수 발생 범위 0~99
 
-    return 0;
+
+		selection_sort(list, n); // 선택정렬 호출 
+		insertion_sort(list, n);
+		bubble_sort(list, n);
+	}
+	
+
+	printf("\n");
+	return 0;
+
+
+	return;
 }
