@@ -17,13 +17,12 @@ void selection_sort(int list[], int n)
 		for (j = i + 1; j < n; j++) 			// 최솟값 탐색
 		{
 			qsum++;
-			if (list[j] < list[least]) { 
-				least = j; msum++;
+			if (list[j] < list[least]) {
+				least = j;
+				msum++;
 			}
 		}
 		SWAP(list[i], list[least], temp);
-
-
 	}
 }
 /**삽입정렬*/
@@ -62,7 +61,6 @@ int main() {
 	int i;
 	int n = MAX_SIZE;
 	int list[] = malloc(sizeof(int) * MAX_SIZE);
-	int sum[] = {0,0,0,0,0,0};
 
 	for (int j = 0; j < n; j++) {
 		srand(time(NULL));
@@ -70,37 +68,31 @@ int main() {
 			list[i] = rand() % 100; // 난수 발생 범위 0~99
 
 
-		selection_sort(list, n); // 선택정렬 호출 
-		sum[0] += msum / n;
-		sum[1] += qsum / n;
+		selection_sort(list, n);
 		msum = qsum = 0;
 
 		insertion_sort(list, n);
-		sum[2] += msum / n;
-		sum[3] += qsum / n;
 		msum = qsum = 0;
 
 		bubble_sort(list, n);
-		sum[4] += msum / n;
-		sum[5] += qsum / n;
 		msum = qsum = 0;
-
 	}
-	for (int s = 0; s < 5; s++) {
-		sum[s] /= n;
-	}
-	 printf("선택 정렬의 이동 평균은 %d \n", sum[0]); 
-	 printf("선택 정렬의 비교 평균은 %d \n", sum[1]); 
-	 printf("삽입 정렬의 이동 평균은 %d \n", sum[2]); 
-	 printf("삽입 정렬의 비교 평균은 %d \n", sum[3]); 
-	 printf("버블 정렬의 이동 평균은 %d \n", sum[4]); 
-	 printf("버블 정렬의 비교 평균은 %d \n", sum[5]); 
 
-	
+	// 각 정렬들의 출력을 한번씩만 하기 위한 코드
+	printf("선택 정렬의 이동 평균은 %d \n", sum[0] / n);
+	printf("선택 정렬의 비교 평균은 %d \n", sum[1] / n);
+	sum[0] = 0;
+	sum[1] = 0;
 
-	printf("\n");
+	printf("삽입 정렬의 이동 평균은 %d \n", sum[2] / n);
+	printf("삽입 정렬의 비교 평균은 %d \n", sum[3] / n);
+	sum[2] = 0;
+	sum[3] = 0;
+
+	printf("버블 정렬의 이동 평균은 %d \n", sum[4] / n);
+	printf("버블 정렬의 비교 평균은 %d \n", sum[5] / n);
+	sum[4] = 0;
+	sum[5] = 0;
+
 	return 0;
-
-
-	return;
 }
