@@ -13,7 +13,7 @@ void inc_insertion_sort(int list[], int first, int last, int gap)
 // first는 0~gap 
 // last는 최대치
 // gap 은 점프 거리
-//
+
 {
 	/**key : 비교할 대상*/
 	int i, j, key;
