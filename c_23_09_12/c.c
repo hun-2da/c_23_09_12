@@ -20,15 +20,15 @@ void inc_insertion_sort(int list[], int first, int last, int gap)
 		//띄어 넘어 가면서 비교하기 위한 for문, 
 		// first + gap : 비교 대상
 		key = list[i];
-		qsum++;
+		
 		for (j = i - gap; j >= first && key < list[j]; j = j - gap) {
 			// i : 비교할 대상의 위치 즉 j는 구분할 값
 			// j가 first보다 크면서 && 비교 대상보다 클때
 			// j는 - gap
 			list[j + gap] = list[j];
 			msum++;
-			
-		}
+			qsum++;
+		}msum++;
 		list[j + gap] = key;
 	}
 }
