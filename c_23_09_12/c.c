@@ -17,20 +17,20 @@ int partition(int list[], int left, int right)
 
 	low = left;
 	high = right + 1;
-	pivot = list[left];
+	pivot = list[left];//기준 값
 	do {
 		do {
-			low++;
+			low++;	// 비교할 값1
 			comp++;
 		}while (low <= right && list[low] < pivot);
 		do {
-			high--;
+			high--;	//비교할 값2
 			comp++;
 		}while (high >= left && list[high] > pivot);
 
 		if (low < high) { 
 			move++;
-			SWAP(list[low], list[high], temp); 
+			SWAP(list[low], list[high], temp); //교환
 		}
 	} while (low < high);
 
