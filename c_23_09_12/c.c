@@ -7,6 +7,8 @@
 
 int list[MAX_SIZE];
 int n;
+int move = 0, comp = 0;
+int f;
 
 int partition(int list[], int left, int right)
 {
@@ -27,6 +29,7 @@ int partition(int list[], int left, int right)
 	} while (low < high);
 
 	SWAP(list[left], list[high], temp);
+
 	return high;
 }
 
@@ -43,13 +46,30 @@ int main(void)
 {
 	int i;
 	n = MAX_SIZE;
-	srand(time(NULL));
-	for (i = 0; i < n; i++)      	// 난수 생성 및 출력 
-		list[i] = rand() % 100;
+	double sum[2] = { 0,0 };
 
-	quick_sort(list, 0, n - 1); // 퀵정렬 호출 
-	for (i = 0; i < n; i++)
-		printf("%d ", list[i]);
-	printf("\n");
+	printf("Original List \n\n");
+	for (f = 0; f < n; f++) {
+		for (i = 0; i < n; i++) {      	// 난수 생성 및 출력 
+			list[i] = rand() % 100;
+			if (f == 0) {
+				printf(" %d ", list[i]);
+			}
+		}if (f == 0) printf("\n\n\n");
+
+		srand(time(NULL));
+		quick_sort(list, 0, n - 1); // 퀵정렬 호출 
+
+		sum[0] += move;
+		sum[1] += comp;
+		move = comp = 0;
+
+	}
+	printf("\Quick 정렬의 이동 평균은 %f \n", sum[0] / n);
+	printf("Quick 정렬의 비교 평균은 %f \n", sum[1] / n);
+
 	return 0;
 }
+
+
+// -------------------------------------------------------------------------------------------------
