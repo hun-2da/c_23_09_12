@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<time.h>
 
-#define MAX_SIZE 10
+#define MAX_SIZE 20
 #define SWAP(x,y,t) ((t)=(x),(x)=(y),(y)=(t))
 
 int list[MAX_SIZE];
@@ -19,17 +19,28 @@ int partition(int list[], int left, int right)
 	high = right + 1;
 	pivot = list[left];
 	do {
-		do
+		do {
 			low++;
-		while (low <= right && list[low] < pivot);
-		do
+			comp++;
+		}while (low <= right && list[low] < pivot);
+		do {
 			high--;
-		while (high >= left && list[high] > pivot);
-		if (low < high) SWAP(list[low], list[high], temp);
+			comp++;
+		}while (high >= left && list[high] > pivot);
+
+		if (low < high) { 
+			move++;
+			SWAP(list[low], list[high], temp); 
+		}
 	} while (low < high);
 
 	SWAP(list[left], list[high], temp);
-
+	move++;
+	if (f == 0) {
+		for (int i = 0; i < MAX_SIZE; i++)
+			printf(" %d ", list[i]);
+		printf("\n");
+	}
 	return high;
 }
 
